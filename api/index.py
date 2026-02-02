@@ -37,3 +37,34 @@ async def buscar_servidor(request: Request):
         <p><strong>Data de Ingresso:</strong> {dados['data_ingresso']}</p>
         <p><strong>Gratificação:</strong> R$ {dados['gratificacao'] if pd.notna(dados['gratificacao']) else '0,00'}</p>
     </div>""".replace("\n", "")
+    
+
+# Adicione esta URL da sua planilha (substitua pelo link que você copiou)
+GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTH0uukZzqz3Vahb3jBDtyd2Q4jwXJaEAal5Lb4ucmFmlFtcehT751_MCeBPwN2lML1o6TpkJ8ziNPt/pub?gid=337243754&single=true&output=csv"
+
+@app.post("/buscar-google")
+async def buscar_google(request: Request):
+    form_data = await request.form()
+    siape_buscado = form_data.get("siape")
+    
+    try:
+        # O Pandas consegue ler diretamente da URL do Google
+        df_google = pd.read_csv(GOOGLE_SHEET_CSV_URL, dtype={'siape': str})
+        
+        servidor = df_google[df_google['siape'] == siape_buscado]
+        
+        if servidor.empty:
+            return HTMLResponse("<div class='error'>Servidor não encontrado na Planilha Google.</div>")
+        
+        dados = servidor.iloc[0].to_dict()
+        
+        return f"""
+        <div class="result-card" style="border-left-color: #28a745; background: #eaffea;">
+            <p><strong>Origem:</strong> Planilha Google (Nuvem)</p>
+            <p><strong>Nome:</strong> {dados['nome']}</p>
+            <p><strong>Setor:</strong> {dados['setor']}</p>
+            <p><strong>Status:</strong> Dados atualizados em tempo real</p>
+        </div>
+        """
+    except Exception as e:
+        return HTMLResponse(f"<div class='error'>Erro ao conectar com o Google Sheets: {str(e)}</div>")

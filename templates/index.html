@@ -16,13 +16,22 @@
 <body>
     <div class="container">
         <h2>Consulta de Servidor</h2>
-        <form hx-post="/buscar" hx-target="#resultado">
+        <form hx-post="/buscar-google" hx-target="#resultado">
             <input type="text" name="siape" placeholder="Digite o SIAPE (7 dígitos)" maxlength="7" required>
-            <button type="submit">Buscar</button>
+            <button type="submit">Buscar Google</button>
         </form>
 
         <div id="resultado">
             </div>
     </div>
+    
+    <div class="container" style="margin-top: 20px;">
+    <h2>Consulta via Google Sheets</h2>
+    <form hx-post="/buscar-google" hx-target="#resultado-google">
+        <input type="text" name="siape" placeholder="SIAPE para busca na nuvem" required>
+        <button type="submit" style="background: #28a745;">Buscar no Google</button>
+    </form>
+    <div id="resultado-google"></div>
+</div>
 </body>
 </html>
