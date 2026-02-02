@@ -7,6 +7,7 @@ import os
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 
+
 # Carrega os dados ao iniciar
 CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "servidores.csv")
 df = pd.read_csv(CSV_PATH, dtype={'siape': str})
@@ -29,12 +30,10 @@ async def buscar_servidor(request: Request):
     dados = servidor.iloc[0].to_dict()
     
     # Retorna apenas o pedaço de HTML que o HTMX vai injetar
-    return f"""
-    <div class="result-card">
+    return f"""<div class="result-card">
         <p><strong>Nome:</strong> {dados['nome']}</p>
         <p><strong>Setor:</strong> {dados['setor']}</p>
         <p><strong>Escolaridade:</strong> {dados['escolaridade']}</p>
         <p><strong>Data de Ingresso:</strong> {dados['data_ingresso']}</p>
         <p><strong>Gratificação:</strong> R$ {dados['gratificacao'] if pd.notna(dados['gratificacao']) else '0,00'}</p>
-    </div>
-    """
+    </div>""".replace("\n", "")
